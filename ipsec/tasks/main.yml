@@ -1,16 +1,16 @@
 ---
-# update 
-#  - name: update
-#    sudo: yes
-#    apt:
-#      update_cache: yes
-# install packet
-#  - name : Install packet
-#    sudo: yes
-#    apt:
-#     name: "{{ item }}" 
-#     state: present
-#    with_items: "{{ strongswan_packages }}"
+#update 
+  - name: update
+    sudo: yes
+    apt:
+      update_cache: yes
+#install packet
+  - name : Install packet
+    sudo: yes
+    apt:
+     name: "{{ item }}" 
+     state: present
+    with_items: "{{ strongswan_packages }}"
 
 # Tranfer root key
   - name: tranfer root key
@@ -64,12 +64,27 @@
       - ipsec.conf
       - ipsec.secrets
 ### Config ipsec.conf
-#  - name : config ipsec.conf
-#    template: 
-#      src: "{{ item }}.j2"
-#      dest: "{{ strongswan_config_base }}/{{ item }}"
-#      owner: root
-#      group: root
-#      mode: 0644
-#    with_items:
-#      - ipsec.conf 
+  - name : config ipsec.conf
+    sudo: yes
+    template: 
+      src: "{{ item }}.j2"
+      dest: "{{ strongswan_config_base }}/{{ item }}"
+      owner: root
+      group: root
+      mode: 0644
+    with_items:
+      - ipsec.conf
+      - ipsec.secrets
+### Copy strongswan.conf 
+  - name: copy strongswan.conf
+    sudo: yes
+    copy:
+      src: /etc/ansible/roles/ipsec/files/strongswan.conf
+      dest: /etc/
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+      restart strongswan
+###include firewall
+  - include: firewall.yml

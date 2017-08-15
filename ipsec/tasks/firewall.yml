@@ -1,0 +1,29 @@
+---
+### open protocol for Ipsec
+  - name: Open Iptables protocols for strongSwan
+    firewalld:
+      rich_rule: "rule protocol value={{ item }} accept"
+      permanent: true
+      state: enabled
+      immediate: yes
+    when:
+      (use_firewalld is defined and use_firewalld)
+    with_items:
+      - ah
+      - esp
+
+  - name: Open firewalld ports for strongSwan
+    firewalld:
+      port: "{{ item }}"
+      permanent: true
+      state: enabled
+      immediate: yes
+    when:
+      (use_firewalld is defined and use_firewalld)
+    with_items:
+      - 500/udp
+      - 4500/udp
+
+
+  - name: Enable firewalld
+    service: name=firewalld state=started enabled=yes

@@ -5,12 +5,15 @@
   key_try: 1
   key_ex: ikev2
   mob: no
-  left: "{{ ansible_default_ipv4 }}"
+  left: "{{ ansible_default_ipv4['address'] }}"
   left_cert: "{{ ansible_hostname }}Cert.pem"
   left_id: "C=VN, O=strongswan, CN={{ ansible_nodename }}"
+## not true
   left_sub: 10.5.117.0/24
   fw: yes
   right: 45.124.95.62 
   right_id: "C=VN, O=strongswan, CN= slave2-chungptCert.pem"
   right_sub: 10.4.117.0/24
+##############
   auto: add
+  key_key: "{{ ansible_nodename }}Key.pem"
