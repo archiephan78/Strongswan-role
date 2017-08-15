@@ -1,0 +1,75 @@
+---
+# update 
+#  - name: update
+#    sudo: yes
+#    apt:
+#      update_cache: yes
+# install packet
+#  - name : Install packet
+#    sudo: yes
+#    apt:
+#     name: "{{ item }}" 
+#     state: present
+#    with_items: "{{ strongswan_packages }}"
+
+# Tranfer root key
+  - name: tranfer root key
+    sudo: yes
+    copy: 
+      src: /etc/ansible/roles/ipsec/files/strongswanKey.pem
+      dest: /etc/ipsec.d/private
+      owner: root
+      group: root
+      mode: 0644
+# Tranfer CA
+  - name: tranfer root Cert
+    sudo: yes
+    copy:
+      src: /etc/ansible/roles/ipsec/files/strongswanCert.pem
+      dest: /etc/ipsec.d/cacerts
+      owner: root
+      group: root
+      mode: 0644
+###Create Server  key
+  - name: create server Key
+    sudo: yes
+    shell: ipsec pki --gen --type rsa --size 2048 --outform pem > private/{{ ansible_nodename }}Key.pem
+    args:
+      chdir: /etc/ipsec.d/
+## Chmod
+  - name: mode file
+    sudo: yes
+    file:
+      path: /etc/ipsec.d/private/{{ ansible_nodename }}Key.pem
+      owner: root
+      group: root
+      mode: 0600
+### create Server Cert
+  - name: create server Cert
+    sudo: yes
+    shell: ipsec pki --pub --in private/{{ ansible_nodename }}Key.pem --type rsa | ipsec pki --issue --lifetime 730 --cacert cacerts/strongswanCert.pem --cakey private/strongswanKey.pem --dn "C=VN, O=strongSwan, CN={{ ansible_hostname }} " --san {{ ansible_hostname }} --flag serverAuth --flag ikeIntermediate --outform pem > certs/{{ ansible_nodename }}Cert.pem
+    args:
+      chdir: /etc/ipsec.d/
+
+### Create ipsec.conf and ipsec.secerts
+  - name: Create config and secrets
+    sudo: yes
+    file:
+      path: "{{ strongswan_config_base }}/{{ item }}"
+      state: touch
+      owner: root
+      group: root
+      mode: 0750
+    with_items:
+      - ipsec.conf
+      - ipsec.secrets
+### Config ipsec.conf
+#  - name : config ipsec.conf
+#    template: 
+#      src: "{{ item }}.j2"
+#      dest: "{{ strongswan_config_base }}/{{ item }}"
+#      owner: root
+#      group: root
+#      mode: 0644
+#    with_items:
+#      - ipsec.conf 

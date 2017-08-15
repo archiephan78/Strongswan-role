@@ -1,0 +1,8 @@
+---
+  # vars files for strongswan
+  strongswan_packages:
+    - vim
+    - byobu
+    - tree
+    - strongswan
+  strongswan_config_base: /etc 
