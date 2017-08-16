@@ -16,7 +16,7 @@
   - name: tranfer root key
     sudo: yes
     copy: 
-      src: /etc/ansible/roles/ipsec/files/strongswanKey.pem
+      src: roles/ipsec/files/strongswanKey.pem
       dest: /etc/ipsec.d/private
       owner: root
       group: root
@@ -25,7 +25,7 @@
   - name: tranfer root Cert
     sudo: yes
     copy:
-      src: /etc/ansible/roles/ipsec/files/strongswanCert.pem
+      src: roles/ipsec/files/strongswanCert.pem
       dest: /etc/ipsec.d/cacerts
       owner: root
       group: root
@@ -79,7 +79,7 @@
   - name: copy strongswan.conf
     sudo: yes
     copy:
-      src: /etc/ansible/roles/ipsec/files/strongswan.conf
+      src: /roles/ipsec/files/strongswan.conf
       dest: /etc/
       owner: root
       group: root
